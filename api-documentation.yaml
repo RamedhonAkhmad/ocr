@@ -1,0 +1,114 @@
+openapi: 3.0.3
+info:
+  title: KTP OCR API
+  description: API for validating NIK and extracting KTP data from uploaded images.
+  version: 1.0.0
+
+servers:
+  - url: http://127.0.0.1:5000/
+    description: Local Development Server
+  - url: https://api.example.com/
+    description: Production Server
+
+paths:
+  /validate-nik:
+    post:
+      summary: Validate NIK from uploaded KTP image
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Image file of the KTP document
+      responses:
+        '200':
+          description: NIK is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: NIK valid
+        '400':
+          description: Bad Request - Missing or invalid file
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Missing or no file uploaded
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error processing image
+
+  /extract-ktp:
+    post:
+      summary: Extract identity data from uploaded KTP image
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Image file of the KTP document
+      responses:
+        '200':
+          description: KTP data extracted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Extract data successfully
+                  data:
+                    type: object
+                    additionalProperties:
+                      type: string
+                    example:
+                      NIK: "3201021234567890"
+                      Nama: "John Doe"
+                      Tempat/Tgl Lahir: "Bandung, 01-01-1990"
+                      Jenis Kelamin: "Laki-Laki"
+                      Alamat: "Jl. Merdeka No. 123"
+        '400':
+          description: Bad Request - Missing or invalid file
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Missing or no file uploaded
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error processing image
