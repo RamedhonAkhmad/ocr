@@ -1,11 +1,12 @@
 import os
+os.environ['TORCH_HOME'] = '/tmp/torch'
+os.environ['EASYOCR_CACHE_DIR'] = '/tmp/.EasyOCR'
 import cv2
 import easyocr
 import difflib
 
 # Set environment agar EasyOCR & Torch cache disimpan di folder /tmp (writable)
-os.environ['TORCH_HOME'] = '/tmp/torch'
-os.environ['EASYOCR_CACHE_DIR'] = '/tmp/.EasyOCR'
+
 
 # Definisikan seluruh key yang muncul pada KTP
 expected_keys = [
