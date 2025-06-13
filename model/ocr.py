@@ -1,14 +1,21 @@
 import os
+
+# ✅ Atur direktori cache ke folder yang writable di container
 os.environ['TORCH_HOME'] = '/tmp/torch'
 os.environ['EASYOCR_CACHE_DIR'] = '/tmp/.EasyOCR'
+
+# ✅ Pastikan direktori cache-nya ada
+os.makedirs(os.environ['TORCH_HOME'], exist_ok=True)
+os.makedirs(os.environ['EASYOCR_CACHE_DIR'], exist_ok=True)
+
+print("✅ EasyOCR Cache DIR:", os.environ['EASYOCR_CACHE_DIR'])
+print("✅ Torch Cache DIR:", os.environ['TORCH_HOME'])
+
 import cv2
 import easyocr
 import difflib
 
-# Set environment agar EasyOCR & Torch cache disimpan di folder /tmp (writable)
-
-
-# Definisikan seluruh key yang muncul pada KTP
+# Daftar kunci yang diharapkan dari KTP
 expected_keys = [
     'NIK', 'Nama', 'Tempat/Tgl Lahir', 'Jenis Kelamin', 'Alamat', 'RT/RW',
     'Kel/Desa', 'Kecamatan', 'Agama', 'Status Perkawinan', 'Pekerjaan',
@@ -20,7 +27,7 @@ def preprocess(img):
     grayscale = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     return grayscale
 
-# Fungsi untuk mengekstrak data pada KTP
+# Fungsi ekstraksi data KTP
 def extract_data(img):
     extracted_data = {}
     reader = easyocr.Reader(['id'])
@@ -57,7 +64,7 @@ def extract_data(img):
                 extracted_data[key] = ""
     return extracted_data
 
-# Fungsi untuk ekstraksi NIK dari gambar
+# Fungsi ekstraksi NIK
 def extract_nik(img):
     target_field = "NIK"
     reader = easyocr.Reader(['id'])
@@ -68,27 +75,7 @@ def extract_nik(img):
             if i + 1 < len(results):
                 return results[i + 1][1].strip()
 
-# Fungsi untuk validasi jumlah digit NIK
+# Fungsi validasi NIK
 def validate_nik(img):
     nik_number = extract_nik(img)
     return len(nik_number) == 16 if nik_number else False
-
-
-"""
-    CODE BELOW USED FOR TESTING PURPOSE
-    UNCOMMENT IF YOU WANT TO TEST AND COMPARE THE OCR
-"""
-# img = cv2.imread("images/sample.png")
-
-# def test_ocr(img):
-#     reader = easyocr.Reader(['id'])
-#     results = reader.readtext(img)
-#     for i, (_, text, _) in enumerate(results):
-#         print(text)
-
-# gray_img = preprocess(img)
-# print(validate_nik(gray_img))
-# print(extract_data(img))
-# print(test_ocr(img))
-# plt.imshow(gray_img)
-# plt.show()
